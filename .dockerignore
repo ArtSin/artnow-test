@@ -1,0 +1,9 @@
+allure-2.31-SNAPSHOT
+allure-report
+screenshots
+target
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+.dockerignore

@@ -1,0 +1,44 @@
+services:
+  artnow-test:
+    image: artnow-test
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: artnow-test
+    depends_on:
+      selenium-hub:
+        condition: service_healthy
+      chrome:
+        condition: service_started
+      firefox:
+        condition: service_started
+    environment:
+      - SELENIUM_URL=http://selenium-hub:4444
+    volumes:
+      - ./allure-2.31-SNAPSHOT:/allure:ro
+      - ./allure-report:/app/allure-report
+
+  chrome:
+    image: selenium/node-chrome:4.29
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+
+  firefox:
+    image: selenium/node-firefox:4.29
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+
+  selenium-hub:
+    image: selenium/hub:4.29
+    container_name: selenium-hub
+    healthcheck:
+      test: "/opt/bin/check-grid.sh --host 0.0.0.0 --port 4444"
+      interval: 5s
+      timeout: 5s
+      retries: 10
